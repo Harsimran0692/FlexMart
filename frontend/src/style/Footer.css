@@ -1,0 +1,181 @@
+.footer {
+  background: #232f3e; /* Dark blue like Amazon */
+  color: #ddd;
+  padding-top: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+/* Back to Top Button */
+.back-to-top {
+  background: #37475a;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.back-to-top button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.5rem 2rem;
+  transition: background 0.3s ease;
+}
+
+.back-to-top button:hover {
+  background: #485769;
+}
+
+/* Footer Links */
+.footer-links {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem 1rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #3a4556;
+}
+
+.footer-column {
+  flex: 1;
+  min-width: 200px;
+  margin: 1rem;
+}
+
+.footer-column h4 {
+  color: white;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.footer-column a {
+  display: block;
+  color: #ddd;
+  text-decoration: none;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  transition: color 0.3s ease;
+}
+
+.footer-column a:hover {
+  color: #ff9900; /* Amazon-like orange */
+  text-decoration: underline;
+}
+
+/* Footer Bottom */
+.footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  text-align: center;
+}
+
+.country-selector {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.country-flag {
+  width: 24px; /* Adjust size as needed */
+  height: 18px;
+  vertical-align: middle;
+}
+
+.country-selector p {
+  color: #ddd;
+  padding: 0px 10px;
+  margin: unset;
+}
+
+.footer-copy p {
+  font-size: 0.85rem;
+  color: #999;
+  margin-bottom: 0.5rem;
+}
+
+.legal-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.legal-links a {
+  color: #ddd;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.legal-links a:hover {
+  color: #ff9900;
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer-links {
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 1rem;
+  }
+
+  .footer-column {
+    margin: 0.5rem 0;
+    text-align: center;
+    min-width: 0;
+  }
+
+  .footer-column h4 {
+    font-size: 1rem;
+  }
+
+  .footer-column a {
+    font-size: 0.9rem;
+  }
+
+  .back-to-top button {
+    font-size: 1rem;
+    padding: 0.5rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding-top: 1rem;
+  }
+
+  .footer-links {
+    padding: 1rem;
+  }
+
+  .footer-column h4 {
+    font-size: 0.95rem;
+  }
+
+  .footer-column a {
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .country-selector select {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .footer-copy p {
+    font-size: 0.8rem;
+  }
+
+  .legal-links {
+    gap: 1rem;
+  }
+
+  .legal-links a {
+    font-size: 0.8rem;
+  }
+}
