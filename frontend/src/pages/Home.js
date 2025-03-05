@@ -1,165 +1,110 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import "../style/Home.css";
 import Hero from "../components/Hero";
 import CategoryBar from "../components/CategoryBar";
 import ProductCard from "../components/ProductCard";
 import DealsSection from "../components/DealsSection";
 
-function ProductSection({ category, products, categoryLink }) {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const slidesToShow = 3; // Show 3 products at a time for desktop
+function ProductSection({ category, products }) {
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) =>
-      prev < Math.ceil(products.length / slidesToShow) - 1 ? prev + 1 : 0
-    );
-  };
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) =>
-      prev > 0 ? prev - 1 : Math.ceil(products.length / slidesToShow) - 1
-    );
-  };
+  console.log("category: ", category);
 
   return (
     <div className="product-section">
-      <h3>{category}</h3>
-      <div className="carousel-wrapper">
-        <button
-          className="carousel-btn prev"
-          onClick={prevSlide}
-          disabled={currentSlide === 0}
-        >
-          ❮
-        </button>
-        <div className="carousel-content">
-          {products
-            .slice(
-              currentSlide * slidesToShow,
-              (currentSlide + 1) * slidesToShow
-            )
-            .map((product) => (
-              <Link to={`/product/${product.id}`} key={product.id}>
-                <ProductCard product={product} />
-              </Link>
-            ))}
-        </div>
-        <button
-          className="carousel-btn next"
-          onClick={nextSlide}
-          disabled={
-            currentSlide >= Math.ceil(products.length / slidesToShow) - 1
-          }
-        >
-          ❯
-        </button>
+      <h2 className="category-title">{category.name}</h2>
+      <div className="sub-sections-grid">
+        {/* Display all types as sub-sections */}
+        {category.type.map((type, index) => (
+          <Link
+            to={`/products/${category.name}/${type.name}`}
+            key={type.name || index} // Use index as fallback if name is missing
+            className="sub-section-card"
+            aria-label={`Go to ${type.name} in ${category.name}`}
+          >
+            <img
+              src={type.image}
+              alt={type.name || `Type ${index + 1}`}
+              className="sub-section-image"
+              onError={(e) => {
+                console.log(`Image failed for ${type.name}:`, e.target.src);
+                e.target.src =
+                  "https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-images-image_large.png?v=1530129081";
+                e.target.onerror = null; // Prevent infinite loops if fallback fails
+              }}
+            />
+            <h3 className="sub-section-name">{type.name}</h3>
+          </Link>
+        ))}
       </div>
-      <div className="grid-content">
-        {products.map((product) => (
-          <Link to={`/product/${product.id}`} key={product.id}>
+      <div className="products-grid">
+        {products.slice(0, 4).map((product) => (
+          <Link
+            to={`/product/${product._id}`}
+            key={product._id}
+            className="product-link"
+          >
             <ProductCard product={product} />
           </Link>
         ))}
       </div>
-      <Link to={categoryLink} className="view-more-link" state={{ category }}>
-        See more {category} →
+      <Link
+        to={`/categories/${category.name.split(" ").join("")}/${category._id}`}
+        className="view-more-link"
+      >
+        See more {category.name} →
       </Link>
     </div>
   );
 }
 
 function Home() {
-  const [category] = useState({
-    electronics: [
-      {
-        id: 1,
-        name: "Laptop",
-        image: "https://via.placeholder.com/300x300?text=Laptop",
-      },
-      {
-        id: 2,
-        name: "Headphones",
-        image: "https://via.placeholder.com/300x300?text=Headphones",
-      },
-      {
-        id: 3,
-        name: "Mouse",
-        image: "https://via.placeholder.com/300x300?text=Mouse",
-      },
-      {
-        id: 4,
-        name: "Keyboard",
-        image: "https://via.placeholder.com/300x300?text=Keyboard",
-      },
-    ],
-    toys: [
-      {
-        id: 5,
-        name: "Action Figure",
-        image: "https://via.placeholder.com/300x300?text=Action+Figure",
-      },
-      {
-        id: 6,
-        name: "Puzzle",
-        image: "https://via.placeholder.com/300x300?text=Puzzle",
-      },
-      {
-        id: 7,
-        name: "Lego Set",
-        image: "https://via.placeholder.com/300x300?text=Lego",
-      },
-      {
-        id: 8,
-        name: "Doll",
-        image: "https://via.placeholder.com/300x300?text=Doll",
-      },
-    ],
-    books: [
-      {
-        id: 9,
-        name: "Novel",
-        image: "https://via.placeholder.com/300x300?text=Novel",
-      },
-      {
-        id: 10,
-        name: "Textbook",
-        image: "https://via.placeholder.com/300x300?text=Textbook",
-      },
-      {
-        id: 11,
-        name: "Comic",
-        image: "https://via.placeholder.com/300x300?text=Comic",
-      },
-      {
-        id: 12,
-        name: "Cookbook",
-        image: "https://via.placeholder.com/300x300?text=Cookbook",
-      },
-    ],
-    clothing: [
-      {
-        id: 13,
-        name: "T-Shirt",
-        image: "https://via.placeholder.com/300x300?text=T-Shirt",
-      },
-      {
-        id: 14,
-        name: "Jacket",
-        image: "https://via.placeholder.com/300x300?text=Jacket",
-      },
-      {
-        id: 15,
-        name: "Jeans",
-        image: "https://via.placeholder.com/300x300?text=Jeans",
-      },
-      {
-        id: 16,
-        name: "Hat",
-        image: "https://via.placeholder.com/300x300?text=Hat",
-      },
-    ],
-  });
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${API_URL}/categories`);
+        console.log("API Response:", response.data); // Debug the response
+        setCategories(response.data);
+        setError(null);
+      } catch (error) {
+        console.error(
+          "Error fetching categories:",
+          error.response?.data || error.message || error
+        );
+        setError("Failed to load categories. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, [API_URL]);
+
+  if (loading) {
+    return (
+      <main>
+        <div className="loading">Loading Home...</div>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main>
+        <div className="error">{error}</div>
+      </main>
+    );
+  }
+
+  // console.log("Categories in Home:", categories);
 
   return (
     <main>
@@ -167,26 +112,13 @@ function Home() {
       <CategoryBar />
       <DealsSection />
       <section className="products-section">
-        <ProductSection
-          category="Electronics"
-          products={category.electronics}
-          categoryLink="/category/electronics"
-        />
-        <ProductSection
-          category="Toys"
-          products={category.toys}
-          categoryLink="/category/toys"
-        />
-        <ProductSection
-          category="Books"
-          products={category.books}
-          categoryLink="/category/books"
-        />
-        <ProductSection
-          category="Clothing"
-          products={category.clothing}
-          categoryLink="/category/clothing"
-        />
+        {categories.map((category) => (
+          <ProductSection
+            key={category._id}
+            category={category}
+            products={category.products || []} // Ensure products is an array or empty
+          />
+        ))}
       </section>
     </main>
   );

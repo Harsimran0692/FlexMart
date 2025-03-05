@@ -1,82 +1,81 @@
+/* Hero.css */
 .hero {
+  width: 100%;
+  background: #f5f5f5;
+  /* padding: 1rem 0; */
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   overflow: hidden;
 }
 
 .hero-content {
   text-align: center;
-  z-index: 2;
-  padding: 2rem;
+  padding: 1rem; /* Reduced padding for mobile */
+  background: linear-gradient(
+    135deg,
+    #007185 0%,
+    #005f5f 100%
+  ); /* Amazon teal gradient */
+  color: #fff;
+  border-radius: 8px;
+  margin-bottom: 1rem; /* Reduced margin for mobile */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .hero-content h1 {
-  font-size: 3.5rem;
-  color: #1a1a1a;
-  margin-bottom: 1rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 1.5rem; /* Smaller font for mobile */
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-p {
-  font-size: 1.5rem;
-  color: #333;
-  margin-bottom: 2rem;
+.hero-content p {
+  font-size: 0.8rem; /* Smaller font for mobile */
+  font-weight: 300;
+  opacity: 0.9;
 }
 
-.shop-now-btn {
-  padding: 1rem 2.5rem;
-  font-size: 1.2rem;
-  background-color: #ff4444;
-  color: white;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.shop-now-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 5px 15px rgba(255, 68, 68, 0.4);
-}
-
-/* Carousel Styles */
 .deals-carousel {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
+  margin: 0 auto;
   position: relative;
 }
 
 .carousel-container {
   position: relative;
-  height: 400px;
+  width: 100%;
   overflow: hidden;
-  border-radius: 15px;
-  margin-bottom: 1rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  aspect-ratio: 1 / 1; /* Square aspect ratio for mobile by default */
 }
 
 .carousel-slide {
+  width: 100%;
+  height: 100%;
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.5s ease; /* Fade animation */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .carousel-slide.active {
   opacity: 1;
+  z-index: 5; /* Ensure active slide is above others */
 }
 
 .carousel-slide img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain; /* Ensures the entire image is visible, maintaining aspect ratio */
+  border-radius: 8px;
+}
+
+.fallback-image {
+  object-fit: cover; /* Use cover for fallback to ensure it fills the space */
+  background: #f0f0f0; /* Light gray background for placeholders */
 }
 
 .deal-overlay {
@@ -84,102 +83,134 @@ p {
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  padding: 1rem;
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
-}
-
-.carousel-slide:hover .deal-overlay {
-  transform: translateY(0);
-}
-
-.carousel-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
-  font-size: 2rem;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.carousel-btn:hover {
-  background: white;
-}
-
-.prev {
-  left: 1rem;
-}
-
-.next {
-  right: 1rem;
-}
-
-.progress-bar {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.progress-fill {
-  height: 100%;
-  background: #ff4444;
-  transition: width 0.05s linear;
-}
-
-.carousel-dots {
-  position: absolute;
-  bottom: 1rem;
-  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  padding: 0.6rem; /* Reduced padding for mobile */
+  border-radius: 0 0 8px 8px;
   text-align: center;
+  z-index: 10; /* Ensure overlay is above the image */
 }
 
-.dot {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 50%;
-  margin: 0 5px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+.deal-overlay h3 {
+  font-size: 0.9rem; /* Smaller font for mobile */
+  font-weight: 600;
+  margin: 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Add slight shadow for readability */
 }
 
-.dot.active {
-  background: white;
-}
+/* Desktop and Larger Screens */
+@media (min-width: 1025px) {
+  /* .hero {
+    padding: 2rem 0;
+  } */
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  h1 {
+  .hero-content {
+    padding: 2rem;
+    margin: 0.1rem 0.1rem 1rem 0.1rem;
+  }
+
+  .hero-content h1 {
     font-size: 2.5rem;
   }
 
-  p {
+  .hero-content p {
     font-size: 1.2rem;
   }
 
   .carousel-container {
-    height: 300px;
+    aspect-ratio: 16 / 9; /* Widescreen aspect ratio for desktop */
+  }
+
+  .deal-overlay {
+    padding: 1rem;
+  }
+
+  .deal-overlay h3 {
+    font-size: 1.2rem;
   }
 }
 
-@media (max-width: 480px) {
-  h1 {
-    font-size: 2rem;
+/* Tablet (769px–1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .hero {
+    padding: 1.5rem 0;
   }
 
-  .shop-now-btn {
-    padding: 0.8rem 2rem;
+  .hero-content {
+    padding: 1.5rem;
+    margin: 1.5rem;
+  }
+
+  .hero-content h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
   }
 
   .carousel-container {
-    height: 200px;
+    aspect-ratio: 16 / 9; /* Maintain widescreen on tablets */
   }
+
+  .deal-overlay {
+    padding: 0.8rem;
+  }
+
+  .deal-overlay h3 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Mobile (≤ 768px) */
+@media (max-width: 768px) {
+  /* .hero {
+    padding: 1rem 0;
+  } */
+
+  .hero-content {
+    padding: 1rem;
+    margin: 0.1rem;
+  }
+
+  .hero-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .hero-content p {
+    font-size: 0.8rem;
+  }
+
+  .carousel-container {
+    aspect-ratio: 1 / 1; /* Square aspect ratio for better mobile visibility */
+  }
+
+  .carousel-slide img {
+    height: 100%; /* Ensure height matches container */
+  }
+
+  .deal-overlay {
+    padding: 0.6rem;
+  }
+
+  .deal-overlay h3 {
+    font-size: 0.9rem;
+  }
+}
+
+.loading,
+.error,
+.no-deals {
+  text-align: center;
+  padding: 1rem; /* Reduced padding for mobile */
+  color: #555;
+  font-size: 1rem; /* Smaller font for mobile */
+}
+
+.error {
+  color: #b12704; /* Amazon price red */
+}
+
+.no-deals {
+  color: #555;
 }

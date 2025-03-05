@@ -5,9 +5,18 @@ const productRoutes = require("./routes/products");
 const categoryRoutes = require("./routes/categories");
 const cartRoutes = require("./routes/carts");
 const orderRoutes = require("./routes/orders");
+const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
+
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000"); // Replace with your frontend URL
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  next();
+});
 
 // Middleware
 app.use(express.json());

@@ -1,5 +1,12 @@
+// App.js
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useParams,
+} from "react-router-dom";
 import "./App.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -10,28 +17,38 @@ import Checkout from "./pages/Checkout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
-import Category from "./pages/Category";
-import ProductPage from "./pages/ProductPage";
+import ProductPage from "./pages/ProductPage"; // Updated to handle categories and sub-sections
+import SubCategories from "./pages/SubCategories";
 
 function App() {
+  // const { categoryName, categoryId } = useParams();
+  // console.log("useParams: ", useParams());
   return (
     <Router>
-      <div className="App">
+      <div className="app-container">
         <Header />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/signin" element={<Login />} />
-          <Route path="/signup" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/category/:category" element={<Category />} />
-          <Route
-            path="/category/:categoryName/:product"
-            element={<ProductPage />}
-          />
-          <Route path="/checkout" element={<Checkout />} />
-        </Routes>
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/signin" element={<Login />} />
+            <Route path="/signup" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+
+            <Route
+              path="/categories/:subcategory/:id"
+              element={<SubCategories />}
+            />
+            <Route
+              path="/products/:category/:subcategory"
+              element={<ProductPage />}
+            />
+            {/* 404 fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
         <Footer />
       </div>
     </Router>

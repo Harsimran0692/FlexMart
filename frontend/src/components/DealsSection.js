@@ -1,34 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import "../style/DealsSection.css";
 import ProductCard from "./ProductCard";
 
 function DealsSection() {
+  const [deals, setDeals] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-
-  const deals = [
-    {
-      id: 1,
-      name: "Smartphone",
-      image: "https://via.placeholder.com/300x300?text=Smartphone",
-    },
-    {
-      id: 2,
-      name: "Sneakers",
-      image: "https://via.placeholder.com/300x300?text=Sneakers",
-    },
-    {
-      id: 3,
-      name: "Smartwatch",
-      image: "https://via.placeholder.com/300x300?text=Smartwatch",
-    },
-    {
-      id: 4,
-      name: "Headphones",
-      image: "https://via.placeholder.com/300x300?text=Headphones",
-    },
-  ];
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
 
   function calculateTimeLeft() {
     const now = new Date();
@@ -43,13 +23,25 @@ function DealsSection() {
   }
 
   useEffect(() => {
+    const fetchDeals = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/products`);
+        const dealProducts = response.data.slice(0, 6); // Limit to 6 for demo
+        setDeals(dealProducts);
+      } catch (error) {
+        console.error("Error fetching deals:", error);
+      }
+    };
+
+    fetchDeals();
+
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft());
     }, 1000);
     return () => clearInterval(timer);
-  }, []);
+  }, [API_URL]);
 
-  const slidesToShow = 3;
+  const slidesToShow = window.innerWidth <= 768 ? 1 : 3;
 
   const nextSlide = () => {
     setCurrentSlide((prev) =>
@@ -68,7 +60,10 @@ function DealsSection() {
       <div className="deals-header">
         <h2>Today’s Deals</h2>
         <div className="countdown">
-          Ends in: {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
+          <span>Ends in:</span>
+          <span className="countdown-timer">
+            {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
+          </span>
         </div>
       </div>
 
@@ -77,36 +72,40 @@ function DealsSection() {
           className="carousel-btn prev"
           onClick={prevSlide}
           disabled={currentSlide === 0}
+          aria-label="Previous slide"
         >
           ❮
         </button>
         <div className="carousel-content">
-          {deals
-            .slice(
-              currentSlide * slidesToShow,
-              (currentSlide + 1) * slidesToShow
-            )
-            .map((deal) => (
-              <Link to={`/product/${deal.id}`} key={deal.id}>
+          <div
+            className="carousel-inner"
+            style={{
+              transform: `translateX(-${currentSlide * 100}%)`,
+              transition: "transform 0.5s ease",
+            }}
+          >
+            {deals.map((deal) => (
+              <div
+                key={deal._id}
+                className="deal-link"
+                style={{
+                  flex: `0 0 ${100 / slidesToShow}%`,
+                  maxWidth: `${100 / slidesToShow}%`,
+                }}
+              >
                 <ProductCard product={deal} />
-              </Link>
+              </div>
             ))}
+          </div>
         </div>
         <button
           className="carousel-btn next"
           onClick={nextSlide}
           disabled={currentSlide >= Math.ceil(deals.length / slidesToShow) - 1}
+          aria-label="Next slide"
         >
           ❯
         </button>
-      </div>
-
-      <div className="deals-grid">
-        {deals.map((deal) => (
-          <Link to={`/product/${deal.id}`} key={deal.id}>
-            <ProductCard product={deal} />
-          </Link>
-        ))}
       </div>
 
       <Link to="/deals" className="view-all-deals">

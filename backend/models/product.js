@@ -6,9 +6,14 @@ const productSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   description: { type: String, required: true },
   rating: { type: Number, min: 0, max: 5, default: 0 },
+  isDeal: { type: Boolean, default: false },
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
+    required: true,
+  },
+  subCategory: {
+    type: String,
     required: true,
   },
   isAvailable: { type: Boolean, default: true },
