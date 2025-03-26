@@ -21,22 +21,6 @@ const seedData = async () => {
   await Cart.deleteMany({});
   await Order.deleteMany({});
 
-  // Insert Users
-  const users = await User.insertMany([
-    {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      password: "$2b$10$XDK9jS5s7p49uuyD7o/7mO3r5fH8kM5k6l7mN8o9p0q1r2s3t4u5v",
-      createdAt: new Date("2025-02-28T10:00:00Z"),
-    },
-    {
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      password: "$2b$10$XDK9jS5s7p49uuyD7o/7mO3r5fH8kM5k6l7mN8o9p0q1r2s3t4u5v",
-      createdAt: new Date("2025-02-28T10:05:00Z"),
-    },
-  ]);
-
   // Insert Categories
   // Clear existing data
   await Category.deleteMany({});

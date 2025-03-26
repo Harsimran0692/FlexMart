@@ -44,7 +44,7 @@ function Hero() {
     return () => {
       clearInterval(slideInterval);
     };
-  }, [API_URL, deals.length]); // Added deals.length to re-run effect if deals change
+  }, [API_URL, deals.length]);
 
   if (loading) {
     return (

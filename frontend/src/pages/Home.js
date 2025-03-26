@@ -8,7 +8,7 @@ import ProductCard from "../components/ProductCard";
 import DealsSection from "../components/DealsSection";
 
 function ProductSection({ category, products }) {
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
+  // const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
 
   console.log("category: ", category);
 

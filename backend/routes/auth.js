@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const TokenDecoder = require("../helper/tokenDecoder");
 
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
@@ -28,7 +28,10 @@ router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: "Invalid credentials" });
+    if (!user)
+      return res
+        .status(400)
+        .json({ msg: "Invalid credentials Email not Registered" });
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
@@ -38,9 +41,55 @@ router.post("/login", async (req, res) => {
       expiresIn: "1h",
     });
 
-    res.json({ token });
+    res.json({ token, name: user.name });
   } catch (error) {
     res.status(500).json({ msg: "Server error" });
+  }
+});
+
+router.get("/", async (req, res) => {
+  try {
+    const users = await User.find();
+    if (users.length == 0) {
+      return res.status(404).json({ msg: "No User Found" });
+    }
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ msg: "Server Error: " + error.message });
+  }
+});
+
+router.get("/user", async (req, res) => {
+  try {
+    // Check if Authorization header exists and is properly formatted
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res
+        .status(401)
+        .json({ msg: "No token provided or invalid format" });
+    }
+
+    // Extract token
+    const userToken = authHeader.split(" ")[1];
+    if (!userToken) {
+      return res.status(401).json({ msg: "Token missing" });
+    }
+
+    const userId = TokenDecoder(userToken);
+
+    // Find user by ID
+    const user = await User.findById(userId).select("name email");
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    // Return user data
+    res.status(200).json({
+      name: user.name,
+      email: user.email, // Optional
+    });
+  } catch (error) {
+    res.status(500).json({ msg: "Server Error: " + error.message });
   }
 });
 

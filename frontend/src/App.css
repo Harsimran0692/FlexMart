@@ -20,3 +20,30 @@ body {
 main {
   flex: 1;
 }
+
+/* Error Popup */
+.error-popup {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ff4d4d;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  font-size: 0.9rem;
+  font-weight: bold;
+  z-index: 1002;
+  max-width: 90%;
+  text-align: center;
+  animation: bounceIn 0.5s ease-out, fadeOut 0.5s ease-out 2.5s forwards;
+}
+
+@media (max-width: 480px) {
+  .error-popup,
+  .success-popup {
+    font-size: 0.8rem;
+    padding: 0.6rem 1rem;
+  }
+}

@@ -319,6 +319,22 @@
   line-height: 1.5;
 }
 
+/* Animation: Bounce In */
+@keyframes bounceIn {
+  0% {
+    transform: translateX(-50%) translateY(-80px); /* Slightly closer start */
+    opacity: 0;
+  }
+  60% {
+    transform: translateX(-50%) translateY(8px); /* Smaller overshoot */
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .product-detail-content {
@@ -396,5 +412,18 @@
 
   .option-select {
     width: 100%;
+  }
+
+  .auth-popup {
+    padding: 0.6rem 1.2rem; /* Even smaller padding */
+    max-width: 260px; /* Smaller max-width */
+  }
+
+  .auth-popup h2 {
+    font-size: 1rem;
+  }
+
+  .auth-popup p {
+    font-size: 0.75rem;
   }
 }

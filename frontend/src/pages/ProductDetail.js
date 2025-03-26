@@ -1,18 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
 import "../style/ProductDetail.css";
+import { setCart } from "../feature/cart/cartSlice";
 
 function ProductDetail() {
-  const { subcategory, id } = useParams(); // Updated to include subcategory from route
+  const { subcategory, id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [cart, setCart] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
+  const [availability, setAvailability] = useState(false);
+  const [popup, setPopup] = useState(null);
   const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Select cart from Redux store
+  const cart = useSelector((state) => state.cart.cart);
+
+  useEffect(() => {
+    console.log("Updated cart in Redux:", cart);
+  }, [cart]);
+
+  axios.defaults.withCredentials = true;
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -22,9 +37,9 @@ function ProductDetail() {
         const response = await axios.get(`${API_URL}/products/test/${id}`);
         const fetchedProduct = response.data.data || response.data;
         setProduct(fetchedProduct);
-        // Set initial color and size from product specs
         setSelectedColor(fetchedProduct.specs.colors[0] || "");
         setSelectedSize(fetchedProduct.specs.sizes[0] || "");
+        setAvailability(fetchedProduct.isAvailable);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to fetch product");
       } finally {
@@ -34,18 +49,68 @@ function ProductDetail() {
     fetchProduct();
   }, [id, API_URL]);
 
-  const handleAddToCart = (product) => {
-    if (!product.isAvailable) {
-      alert("This product is currently not available.");
-      return;
+  const showPopup = (type, message, redirect = null) => {
+    setPopup({ type, message });
+    setTimeout(() => {
+      setPopup(null);
+      if (redirect) navigate(redirect);
+    }, 2500);
+  };
+
+  const handleAuthCheck = (callback) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      showPopup("auth", "Please sign in to continue.", "/signin");
+    } else {
+      callback();
     }
-    setCart([
-      ...cart,
-      { ...product, quantity, color: selectedColor, size: selectedSize },
-    ]);
-    alert(
-      `${product.name} (Color: ${selectedColor}, Size: ${selectedSize}) has been added to your cart!`
-    );
+  };
+
+  const handleAddToCart = async (product) => {
+    const addToCartAction = async () => {
+      if (!product.isAvailable) {
+        showPopup("error", "This product is currently not available.");
+        return;
+      }
+
+      const cartItem = {
+        productId: product._id,
+        quantity,
+        color: selectedColor,
+        size: selectedSize,
+        availability: availability,
+      };
+
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.post(
+          `${API_URL}/cart/items`,
+          { ...cartItem, token },
+          { headers: { Authorization: `Bearer ${token}` } } // Ensure token is in headers
+        );
+        const updatedCart = response.data.cart || response.data; // Adjust based on API response
+        dispatch(setCart(updatedCart)); // Update Redux with server cart
+        console.log("Cart updated in Redux:", updatedCart);
+        showPopup(
+          "success",
+          `${product.name} (Color: ${selectedColor}, Size: ${selectedSize}) added to cart!`
+        );
+      } catch (err) {
+        console.error("Error adding to cart:", err);
+        const msg = err.response?.data?.msg || "Failed to add product to cart";
+        showPopup("error", msg);
+      }
+    };
+
+    handleAuthCheck(addToCartAction);
+  };
+
+  const handleBuyNow = () => {
+    // Placeholder for Buy Now logic (no counter needed here)
+    handleAuthCheck(() => {
+      showPopup("success", "Proceeding to checkout...");
+      // Add checkout navigation or logic here
+    });
   };
 
   const handleQuantityChange = (e) => {
@@ -62,7 +127,19 @@ function ProductDetail() {
 
   return (
     <div className="product-detail-wrapper">
-      {/* Breadcrumb */}
+      {popup && (
+        <div className={`error-popup ${popup.type}-popup`}>
+          <h2>
+            {popup.type === "auth"
+              ? "Please Sign In"
+              : popup.type === "success"
+              ? "Success"
+              : "Error"}
+          </h2>
+          <p>{popup.message}</p>
+        </div>
+      )}
+
       <div className="product-detail-breadcrumb">
         <Link to="/" className="breadcrumb-item">
           Home
@@ -91,7 +168,6 @@ function ProductDetail() {
         </span>
       </div>
 
-      {/* Main Content */}
       <main className="product-detail-main">
         {loading ? (
           <div className="loading-state">Loading...</div>
@@ -205,6 +281,7 @@ function ProductDetail() {
                 </button>
                 <button
                   className="buy-now-button"
+                  onClick={handleBuyNow}
                   disabled={!product.isAvailable}
                 >
                   Buy Now
@@ -215,7 +292,6 @@ function ProductDetail() {
         )}
       </main>
 
-      {/* Reviews Section */}
       {product && (
         <section className="product-reviews-section">
           <h2>Customer Reviews</h2>
