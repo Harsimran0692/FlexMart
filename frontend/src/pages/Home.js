@@ -8,10 +8,6 @@ import ProductCard from "../components/ProductCard";
 import DealsSection from "../components/DealsSection";
 
 function ProductSection({ category, products }) {
-  // const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
-
-  console.log("category: ", category);
-
   return (
     <div className="product-section">
       <h2 className="category-title">{category.name}</h2>
@@ -71,7 +67,6 @@ function Home() {
       try {
         setLoading(true);
         const response = await axios.get(`${API_URL}/categories`);
-        console.log("API Response:", response.data); // Debug the response
         setCategories(response.data);
         setError(null);
       } catch (error) {

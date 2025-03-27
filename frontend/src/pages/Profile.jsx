@@ -31,19 +31,17 @@ function Profile() {
           navigate("/signin");
           return;
         }
-        const config = { headers: { Authorization: `Bearer ${token}` } };
+        // const userResponse = await axios.get(
+        //   "http://localhost:5001/api/user/profile",
+        //   config
+        // );
+        // setUser(userResponse.data);
 
-        const userResponse = await axios.get(
-          "http://localhost:5001/api/user/profile",
-          config
-        );
-        setUser(userResponse.data);
-
-        const ordersResponse = await axios.get(
-          "http://localhost:5001/api/orders",
-          config
-        );
-        setOrders(ordersResponse.data);
+        // const ordersResponse = await axios.get(
+        //   "http://localhost:5001/api/orders",
+        //   config
+        // );
+        // setOrders(ordersResponse.data);
       } catch (err) {
         setError(err.response?.data?.msg || "Failed to load profile data");
         if (err.response?.status === 401) {
@@ -74,7 +72,7 @@ function Profile() {
     localStorage.removeItem("cart");
     dispatch(setLoginUser("Hello, SignIn")); // Reset Redux state to default
     dispatch(clearCart());
-    navigate("/"); // Navigate to homepage
+    navigate("/");
   };
 
   return (

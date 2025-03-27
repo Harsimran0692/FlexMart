@@ -150,7 +150,7 @@
 
 .product-image {
   width: 100%;
-  height: 220px;
+  height: 250px;
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 15px;
@@ -200,7 +200,7 @@
   }
 
   .product-image {
-    height: 200px;
+    height: 250px;
   }
 }
 
@@ -223,7 +223,7 @@
   }
 
   .product-image {
-    height: 180px;
+    height: 250px;
   }
 }
 
@@ -251,6 +251,6 @@
   }
 
   .product-image {
-    height: 160px;
+    height: 250px;
   }
 }

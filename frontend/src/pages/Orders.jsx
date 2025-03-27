@@ -9,29 +9,29 @@ function Orders() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      setLoader(true);
-      try {
-        const token = localStorage.getItem("token");
-        const config = { headers: { Authorization: `Bearer ${token}` } };
-        const response = await axios.get(
-          "http://localhost:5001/api/orders",
-          config
-        );
-        setOrders(response.data);
-      } catch (err) {
-        setError(err.response?.data?.msg || "Failed to load orders");
-        if (err.response?.status === 401) {
-          localStorage.removeItem("token");
-          navigate("/signin");
-        }
-      } finally {
-        setLoader(false);
-      }
-    };
-    fetchOrders();
-  }, [navigate]);
+  // useEffect(() => {
+  //   const fetchOrders = async () => {
+  //     setLoader(true);
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       const config = { headers: { Authorization: `Bearer ${token}` } };
+  //       const response = await axios.get(
+  //         "http://localhost:5001/api/orders",
+  //         config
+  //       );
+  //       setOrders(response.data);
+  //     } catch (err) {
+  //       setError(err.response?.data?.msg || "Failed to load orders");
+  //       if (err.response?.status === 401) {
+  //         localStorage.removeItem("token");
+  //         navigate("/signin");
+  //       }
+  //     } finally {
+  //       setLoader(false);
+  //     }
+  //   };
+  //   fetchOrders();
+  // }, [navigate]);
 
   return (
     <div className={`profile-page ${loader ? "loading" : ""}`}>

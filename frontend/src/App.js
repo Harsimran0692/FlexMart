@@ -20,6 +20,10 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ProductPage from "./pages/ProductPage";
 import SubCategories from "./pages/SubCategories";
 import Profile from "./pages/Profile";
+import Orders from "./pages/Orders";
+import LoginSecurity from "./pages/LoginSecurity";
+import Addresses from "./pages/Addresses";
+import ContactUs from "./pages/ContactUs";
 
 // Component to restrict access for signed-in users
 const RestrictSignedIn = () => {
@@ -34,11 +38,8 @@ const RestrictSignedIn = () => {
 
 // Component to protect routes for signed-out users (optional, for reference)
 const ProtectedRoute = () => {
-  const loggedInUser = useSelector((state) => state.loginUser.value);
   const token = localStorage.getItem("token");
-  const isSignedIn = token && loggedInUser !== "Hello, SignIn";
-
-  return isSignedIn ? <Outlet /> : <Navigate to="/signin" replace />;
+  return token ? <Outlet /> : <Navigate to="/signin" replace />;
 };
 
 function App() {
@@ -61,6 +62,13 @@ function App() {
             {/* Optional: Protect profile route for signed-in users only */}
             <Route element={<ProtectedRoute />}>
               <Route path="/profile" element={<Profile />} />
+              <Route path="/profile/orders" element={<Orders />} />
+              <Route
+                path="/profile/login-security"
+                element={<LoginSecurity />}
+              />
+              <Route path="/profile/addresses" element={<Addresses />} />
+              <Route path="/profile/contact-us" element={<ContactUs />} />
             </Route>
             <Route
               path="/categories/:subcategory/:id"
@@ -70,6 +78,7 @@ function App() {
               path="/products/:category/:subcategory"
               element={<ProductPage />}
             />
+            <Route />
             {/* 404 fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

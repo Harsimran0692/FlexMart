@@ -87,7 +87,6 @@ router.get("/category-name/:categoryName", async (req, res) => {
 });
 
 router.get("/test/:id", async (req, res) => {
-  console.log("innn");
   try {
     const product = await Product.findById(req.params.id).populate(
       "category reviews.user"

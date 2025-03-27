@@ -159,12 +159,12 @@
 
 .product-availability {
   font-size: 16px;
-  color: #28a745;
+  color: #dc3545;
   margin-bottom: 15px;
 }
 
 .product-availability:not(:last-child) {
-  color: #dc3545; /* Red for unavailable */
+  color: #28a745;
 }
 
 .product-detail-price {
