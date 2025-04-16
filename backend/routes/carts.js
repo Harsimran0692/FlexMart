@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const Cart = require("../models/cart");
-const Product = require("../models/Product");
+const Product = require("../models/product");
 const User = require("../models/user");
 const TokenDecoder = require("../helper/tokenDecoder");
 require("dotenv").config();
