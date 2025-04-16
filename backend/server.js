@@ -9,50 +9,58 @@ const categoryRoutes = require("./routes/categories");
 const cartRoutes = require("./routes/carts");
 const orderRoutes = require("./routes/orders");
 const addressRoute = require("./routes/addresses");
-const { default: mongoose } = require("mongoose");
 require("dotenv").config();
 
 const app = express();
 
-// Connect to database first
-connectDB();
+// Connect to database
+connectDB()
+  .then(() => {
+    console.log("MongoDB connection established");
+  })
+  .catch((err) => {
+    console.error("MongoDB connection failed:", err);
+    process.exit(1); // Exit if DB connection fails
+  });
 
-// Serve static files before session (optional, for assets)
+// Serve static files (optional, for assets)
 app.use(express.static("public"));
 
-// CORS configuration (before session to handle preflight requests)
+// CORS configuration to allow all origins
 app.use(
   cors({
-    origin: "http://localhost:3000", // Your frontend URL
+    origin: "*", // Allow all origins
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // Crucial: allows cookies to be sent
+    credentials: true, // Required for session cookies
   })
 );
 
 // Middleware
 app.use(express.json());
 
+// Session middleware (applied globally)
 const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET || "fallback-secret",
   resave: false,
-  saveUninitialized: true, // Creates session on first request
+  saveUninitialized: false, // Only create sessions for authenticated users
   store: MongoStore.create({
     mongoUrl: process.env.MONGODB_URI,
-    ttl: 24 * 60 * 60,
+    ttl: 24 * 60 * 60, // 24 hours
     autoRemove: "native",
   }),
   cookie: {
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
     httpOnly: true,
-    secure: false, // False for local dev (HTTP)
-    sameSite: "lax", // Works for same-origin; use "none" with secure: true in prod
+    secure: process.env.NODE_ENV === "production", // True on Render (HTTPS)
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Cross-origin in prod
     path: "/",
   },
   name: "connect.sid",
 });
+app.use(sessionMiddleware);
 
-// Debug middleware
+// Debug middleware (uncomment for troubleshooting)
 // app.use((req, res, next) => {
 //   console.log(
 //     `Request: ${req.method} ${req.path}, SessionID: ${req.sessionID}, Cookie: ${
@@ -70,13 +78,20 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/addresses", addressRoute);
 
-// Default route
-// app.get("/", sessionMiddleware, (req, res) => {
-//   const sessionId = req.sessionID; // Get the session ID
-//   res.json({ message: "Welcome to the homepage", sessionId });
-// });
+// Default route (for testing)
+app.get("/", (req, res) => {
+  const sessionId = req.sessionID;
+  res.json({ message: "Welcome to the API", sessionId });
+});
 
-const PORT = process.env.PORT || 5000;
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("Server error:", err.stack);
+  res.status(500).json({ message: "Internal server error" });
+});
+
+// Start server
+const PORT = process.env.PORT || 5001; // Align with your .env PORT=5001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
