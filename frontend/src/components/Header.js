@@ -1,23 +1,45 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import "../style/Header.css";
 import { useSelector, useDispatch } from "react-redux";
 import { setLoginUser } from "../feature/cart/loginUserSlice";
 import { setCart } from "../feature/cart/cartSlice";
+import axios from "axios";
+import "../style/Header.css";
+
+// Custom hook for debouncing
+function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 function Header() {
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("All");
   const [userToken, setUserToken] = useState(localStorage.getItem("token"));
+  const [searchValue, setSearchValue] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
   const [error, setError] = useState("");
-  const selectRef = React.useRef(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1); // Track the focused item
+  const searchRef = useRef(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   // Get cart and logged-in user from Redux store
   const cart = useSelector((state) => state.cart.cart);
   const cartCount = cart.totalItems || 0;
   const loggedInUser = useSelector((state) => state.loginUser.value);
+
+  // Debounce search input
+  const debouncedSearchValue = useDebounce(searchValue, 300);
 
   // Fetch username if token exists and Redux state is default
   const fetchUserName = async (token) => {
@@ -51,12 +73,12 @@ function Header() {
         throw new Error("Failed to fetch cart");
       }
       const data = await response.json();
-      const updatedCart = data.cart || data; // Adjust based on API response
+      const updatedCart = data.cart || data;
       dispatch(setCart(updatedCart));
-      localStorage.setItem("cart", JSON.stringify(updatedCart)); // Cache in localStorage
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
     } catch (error) {
       console.error("Error fetching cart:", error);
-      dispatch(setCart({ items: [], totalItems: 0 })); // Reset on error
+      dispatch(setCart({ items: [], totalItems: 0 }));
       localStorage.setItem(
         "cart",
         JSON.stringify({ items: [], totalItems: 0 })
@@ -95,7 +117,6 @@ function Header() {
           return;
         }
 
-        // Restore username
         if (loggedInUser === "Hello, SignIn") {
           const cachedName = localStorage.getItem("userName");
           if (cachedName) {
@@ -105,7 +126,6 @@ function Header() {
           }
         }
 
-        // Restore cart
         const cachedCart = localStorage.getItem("cart");
         if (cachedCart) {
           dispatch(setCart(JSON.parse(cachedCart)));
@@ -138,21 +158,53 @@ function Header() {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  // Fetch categories
+  // Search products with debounced value
   useEffect(() => {
-    fetch("http://localhost:5001/api/categories/all")
-      .then((response) => response.json())
-      .then((data) => setCategories(data))
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
-        setError("Failed to load categories");
-      });
+    const searchItem = async () => {
+      if (!debouncedSearchValue.trim()) {
+        setSearchResults([]);
+        setIsDropdownOpen(false);
+        setFocusedIndex(-1); // Reset focused index when no results
+        return;
+      }
+
+      try {
+        const response = await axios.get("http://localhost:5001/api/products/");
+        const products = response.data;
+        console.log("Fetched products:", products); // Debug log
+        const filtered = products.filter((product) =>
+          product.name
+            .toLowerCase()
+            .includes(debouncedSearchValue.toLowerCase())
+        );
+        setSearchResults(filtered);
+        setIsDropdownOpen(true);
+        setFocusedIndex(-1); // Reset focused index when new results load
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setError("Failed to search products");
+        setSearchResults([]);
+        setIsDropdownOpen(false);
+        setFocusedIndex(-1);
+      }
+    };
+
+    searchItem();
+  }, [debouncedSearchValue]);
+
+  // Handle clicks outside search to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+        setFocusedIndex(-1);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);
-  };
-
+  // Clear error after 3 seconds
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => setError(""), 3000);
@@ -160,33 +212,82 @@ function Header() {
     }
   }, [error]);
 
+  const handleSearchChange = (e) => {
+    setSearchValue(e.target.value);
+  };
+
+  const handleSearch = () => {
+    console.log("Searching for:", searchValue);
+  };
+
+  const handleProductSelect = (product) => {
+    if (!product._id) {
+      console.error("Product ID is missing:", product);
+      return;
+    }
+    setSearchValue(product.name);
+    setIsDropdownOpen(false);
+    setFocusedIndex(-1);
+    navigate(`/product/${product._id}`);
+  };
+
+  const handleKeyDown = (e) => {
+    if (!isDropdownOpen || searchResults.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault(); // Prevent cursor movement in input
+      setFocusedIndex((prev) =>
+        prev < searchResults.length - 1 ? prev + 1 : 0
+      );
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setFocusedIndex((prev) =>
+        prev > 0 ? prev - 1 : searchResults.length - 1
+      );
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (focusedIndex >= 0 && focusedIndex < searchResults.length) {
+        handleProductSelect(searchResults[focusedIndex]);
+      }
+    } else if (e.key === "Escape") {
+      setIsDropdownOpen(false);
+      setFocusedIndex(-1);
+    }
+  };
+
   return (
     <header className="header">
       <div className="logo">
-        <Link to="/">FlexMart</Link>
+        <a href="/">FlexMart</a>
       </div>
-      <div className="search-bar">
-        <div
-          className={`category-dropdown ${
-            selectedCategory !== "All" ? "expanded" : ""
-          }`}
-        >
-          <select
-            ref={selectRef}
-            value={selectedCategory}
-            onChange={handleCategoryChange}
-          >
-            <option value="All">All</option>
-            {categories.map((category) => (
-              <option key={category.name} value={category.name}>
-                {category.name}
-              </option>
+      <div className="search-bar" ref={searchRef}>
+        <input
+          type="text"
+          value={searchValue}
+          onChange={handleSearchChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Search FlexMart..."
+          onFocus={() => searchResults.length > 0 && setIsDropdownOpen(true)}
+        />
+        <button className="search-btn" onClick={handleSearch}>
+          🔍
+        </button>
+        {isDropdownOpen && searchResults.length > 0 && (
+          <ul className="search-dropdown">
+            {searchResults.map((product, index) => (
+              <li
+                key={product._id ? `${product._id}-${index}` : `index-${index}`}
+                onClick={() => handleProductSelect(product)}
+                className={`search-item ${
+                  focusedIndex === index ? "search-item-focused" : ""
+                }`}
+              >
+                <span className="search-icon">🔍</span>
+                {product.name}
+              </li>
             ))}
-          </select>
-          <span className="dropdown-arrow">▼</span>
-        </div>
-        <input type="text" placeholder="Search FlexMart..." />
-        <button className="search-btn">🔍</button>
+          </ul>
+        )}
       </div>
       <div className="user-actions">
         {loggedInUser === "Hello, SignIn" ? (

@@ -8,6 +8,7 @@ const productRoutes = require("./routes/products");
 const categoryRoutes = require("./routes/categories");
 const cartRoutes = require("./routes/carts");
 const orderRoutes = require("./routes/orders");
+const addressRoute = require("./routes/addresses");
 const { default: mongoose } = require("mongoose");
 require("dotenv").config();
 
@@ -23,7 +24,7 @@ app.use(express.static("public"));
 app.use(
   cors({
     origin: "http://localhost:3000", // Your frontend URL
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // Crucial: allows cookies to be sent
   })
@@ -67,6 +68,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/addresses", addressRoute);
 
 // Default route
 // app.get("/", sessionMiddleware, (req, res) => {

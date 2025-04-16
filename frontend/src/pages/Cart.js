@@ -9,6 +9,10 @@ import {
   FaExclamationCircle,
   FaArrowRight,
   FaBoxOpen,
+  FaCheckCircle,
+  FaShippingFast,
+  FaStore,
+  FaTag,
 } from "react-icons/fa";
 
 function CartItem({ item, onRemove, onQuantityChange, onSelectChange }) {
@@ -26,42 +30,44 @@ function CartItem({ item, onRemove, onQuantityChange, onSelectChange }) {
           type="checkbox"
           checked={isSelected}
           onChange={handleSelectChange}
+          className="custom-checkbox"
         />
       </div>
       <div className="cart-item-content">
-        <img
-          src={
-            item.product.image ||
-            "https://via.placeholder.com/150x150?text=Product"
-          }
-          alt={item.name}
-          className="cart-item-image"
-        />
+        <div className="cart-item-image-container">
+          <img
+            src={
+              item.product.image ||
+              "https://via.placeholder.com/150x150?text=Product" ||
+              "/placeholder.svg"
+            }
+            alt={item.name}
+            className="cart-item-image"
+          />
+        </div>
         <div className="cart-item-details">
-          <h4>{item.name}</h4>
-          <p className="deal-info">Big Spring Deal</p>
-          <p className="price-info">
-            <span className="discount">-21%</span>{" "}
+          <h4 className="item-title">{item.name}</h4>
+          <div className="item-badges">
+            <span className="deal-info">
+              <FaTag className="badge-icon" /> Big Spring Deal
+            </span>
+          </div>
+          <div className="price-container">
+            <span className="discount">-21%</span>
             <span className="price">${item.price.toFixed(2)}</span>
-          </p>
-          <p className="list-price">
-            List Price: ${(item.price / 0.79).toFixed(2)}
-          </p>
-          {/* <p className="delivery-info">
-            <span className="prime">✓prime</span> Same-Day
-          </p> */}
-          <p className="delivery-time">FREE delivery Today 5 p.m. - 10 p.m.</p>
-          {/* <p className="stock-status">
-            {item.availability === "In Stock" ? (
-              <span className="in-stock">In Stock</span>
-            ) : (
-              <span className="out-of-stock">
-                Only {item.product.stock} left in stock (more on the way)
-              </span>
-            )}
-          </p> */}
+            <span className="list-price">
+              List Price: ${(item.price / 0.79).toFixed(2)}
+            </span>
+          </div>
+          <div className="delivery-container">
+            <p className="delivery-time">
+              <FaShippingFast className="delivery-icon" /> FREE delivery Today 5
+              p.m. - 10 p.m.
+            </p>
+          </div>
           <p className="shipping-info">
-            Ships from and sold by <span className="seller">flexmart.ca</span>
+            <FaStore className="store-icon" /> Ships from and sold by{" "}
+            <span className="seller">flexmart.ca</span>
           </p>
           <div className="cart-item-actions">
             <div className="quantity-control">
@@ -83,16 +89,21 @@ function CartItem({ item, onRemove, onQuantityChange, onSelectChange }) {
                 ))}
               </select>
             </div>
-            <button
-              onClick={() => onRemove(item._id)}
-              className="delete-btn"
-              aria-label="Delete item"
-            >
-              Delete
-            </button>
-            <button className="save-for-later-btn" aria-label="Save for later">
-              Save for later
-            </button>
+            <div className="action-buttons">
+              <button
+                onClick={() => onRemove(item._id)}
+                className="delete-btn"
+                aria-label="Delete item"
+              >
+                Delete
+              </button>
+              <button
+                className="save-for-later-btn"
+                aria-label="Save for later"
+              >
+                Save for later
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -225,13 +236,13 @@ function Cart() {
   return (
     <div className={`cart-container ${loading ? "loading" : ""}`}>
       <div className="cart-header">
-        <h2 className="cart-title">Cart</h2>
+        <h2 className="cart-title">Shopping Cart</h2>
         {/* <button className="buy-again-tab">Buy Again</button> */}
       </div>
       {loading ? (
         <div className="loader">
           <div className="spinner"></div>
-          Loading cart...
+          <p className="loading-text">Loading your cart...</p>
         </div>
       ) : error ? (
         <div className="error-popup">
@@ -239,51 +250,82 @@ function Cart() {
         </div>
       ) : cartItems.length === 0 ? (
         <div className="empty-cart">
-          <FaBoxOpen className="empty-cart-icon" />
-          <p>Your cart is empty.</p>
+          <div className="empty-cart-icon-container">
+            <FaBoxOpen className="empty-cart-icon" />
+          </div>
+          <h3 className="empty-cart-title">Your cart is empty</h3>
+          <p className="empty-cart-message">
+            Looks like you haven't added anything to your cart yet.
+          </p>
           <Link to="/" className="continue-shopping">
             Start Shopping Now <FaArrowRight className="icon" />
           </Link>
         </div>
       ) : (
         <>
-          <div className="cart-summary">
-            <h3>
-              Subtotal:{" "}
-              <span className="subtotal-amount">${subtotal.toFixed(2)}</span>
-            </h3>
-            <button className="checkout-btn" onClick={handleCheckout}>
-              Proceed to checkout ({selectedCount} item
-              {selectedCount !== 1 ? "s" : ""})
-            </button>
-          </div>
-          <div className="select-all">
-            <input
-              type="checkbox"
-              checked={
-                cartItems.length > 0 &&
-                Object.values(selectedItems).every(Boolean)
-              }
-              onChange={(e) => {
-                const newSelection = {};
-                cartItems.forEach((item) => {
-                  newSelection[item._id] = e.target.checked;
-                });
-                setSelectedItems(newSelection);
-              }}
-            />
-            <span>Select all items</span>
-          </div>
-          <div className="cart-items">
-            {cartItems.map((item) => (
-              <CartItem
-                key={item._id}
-                item={item}
-                onRemove={handleRemove}
-                onQuantityChange={handleQuantityChange}
-                onSelectChange={handleSelectChange}
-              />
-            ))}
+          <div className="cart-content">
+            <div className="cart-items-container">
+              <div className="select-all">
+                <input
+                  type="checkbox"
+                  className="custom-checkbox"
+                  checked={
+                    cartItems.length > 0 &&
+                    Object.values(selectedItems).every(Boolean)
+                  }
+                  onChange={(e) => {
+                    const newSelection = {};
+                    cartItems.forEach((item) => {
+                      newSelection[item._id] = e.target.checked;
+                    });
+                    setSelectedItems(newSelection);
+                  }}
+                  id="select-all-checkbox"
+                />
+                <label htmlFor="select-all-checkbox">Select all items</label>
+              </div>
+              <div className="cart-items">
+                {cartItems.map((item) => (
+                  <CartItem
+                    key={item._id}
+                    item={item}
+                    onRemove={handleRemove}
+                    onQuantityChange={handleQuantityChange}
+                    onSelectChange={handleSelectChange}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="cart-summary">
+              <div className="summary-header">
+                <h3>Order Summary</h3>
+              </div>
+              <div className="summary-details">
+                <div className="summary-row">
+                  <span>Items ({selectedCount}):</span>
+                  <span>${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="summary-row">
+                  <span>Shipping:</span>
+                  <span className="free-shipping">FREE</span>
+                </div>
+                <div className="summary-row total">
+                  <span>Order total:</span>
+                  <span className="subtotal-amount">
+                    ${subtotal.toFixed(2)}
+                  </span>
+                </div>
+              </div>
+              <div className="checkout-container">
+                <button className="checkout-btn" onClick={handleCheckout}>
+                  Proceed to checkout ({selectedCount} item
+                  {selectedCount !== 1 ? "s" : ""})
+                </button>
+                <div className="secure-checkout">
+                  <FaCheckCircle className="secure-icon" /> Secure transaction
+                </div>
+              </div>
+            </div>
           </div>
         </>
       )}

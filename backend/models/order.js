@@ -20,6 +20,17 @@ const orderSchema = new mongoose.Schema({
     default: "pending",
     enum: ["pending", "shipped", "delivered", "cancelled"],
   },
+  address: {
+    id: String, // Changed from Number to String to match MongoDB _id
+    name: String,
+    address: String,
+    phone: String,
+    email: String,
+  },
+  paymentDetails: {
+    cardNumberLast4: String,
+    cardholderName: String,
+  },
   items: [orderItemSchema],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
