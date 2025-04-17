@@ -29,7 +29,7 @@ app.use(express.static("public"));
 // CORS configuration to allow all origins
 app.use(
   cors({
-    origin: "*", // Allow all origins
+    origin: "http://localhost:3000", // Allow all origins
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // Required for session cookies
