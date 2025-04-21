@@ -17,9 +17,12 @@ function Login() {
 
   const fetchCart = async (token) => {
     try {
-      const response = await axios.get("http://localhost:5001/api/cart/items", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        "https://flexmart-backend.onrender.com/api/cart/items",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const cartData = response.data.cart || response.data; // Adjust based on API response
       dispatch(setCart(cartData));
       localStorage.setItem("cart", JSON.stringify(cartData)); // Cache cart
@@ -37,7 +40,7 @@ function Login() {
     try {
       setLoader(true);
       const response = await axios.post(
-        "http://localhost:5001/api/auth/login",
+        "https://flexmart-backend.onrender.com/api/auth/login",
         {
           email,
           password,

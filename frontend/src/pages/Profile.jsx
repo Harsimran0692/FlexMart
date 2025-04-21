@@ -32,13 +32,13 @@ function Profile() {
           return;
         }
         // const userResponse = await axios.get(
-        //   "http://localhost:5001/api/user/profile",
+        //   "https://flexmart-backend.onrender.com/api/user/profile",
         //   config
         // );
         // setUser(userResponse.data);
 
         // const ordersResponse = await axios.get(
-        //   "http://localhost:5001/api/orders",
+        //   "https://flexmart-backend.onrender.com/api/orders",
         //   config
         // );
         // setOrders(ordersResponse.data);

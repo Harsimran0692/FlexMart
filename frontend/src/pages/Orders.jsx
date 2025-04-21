@@ -41,7 +41,7 @@ function Orders() {
         }
         const config = { headers: { Authorization: `Bearer ${token}` } };
         const response = await axios.get(
-          "http://localhost:5001/api/orders",
+          "https://flexmart-backend.onrender.com/api/orders",
           config
         );
         setOrders(response.data);
@@ -124,7 +124,7 @@ function Orders() {
       const token = localStorage.getItem("token");
       const config = { headers: { Authorization: `Bearer ${token}` } };
       await axios.patch(
-        `http://localhost:5001/api/orders/${orderId}`,
+        `https://flexmart-backend.onrender.com/api/orders/${orderId}`,
         { status: "cancelled" },
         config
       );

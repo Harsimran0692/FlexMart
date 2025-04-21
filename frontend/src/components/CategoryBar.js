@@ -5,7 +5,9 @@ import "../style/CategoryBar.css";
 
 function CategoryBar() {
   const [categories, setCategories] = useState([]);
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
+  const API_URL =
+    process.env.REACT_APP_API_URL ||
+    "https://flexmart-backend.onrender.com/api";
 
   useEffect(() => {
     const fetchCategories = async () => {

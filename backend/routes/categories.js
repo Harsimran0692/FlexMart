@@ -16,14 +16,23 @@ router.get("/all", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const categories = await Category.find().lean();
-    const limitCategories = categories.slice(0, 4);
-    const limitSubCategories = limitCategories.map((categories) => ({
-      ...categories,
-      type: categories.type.slice(0, 4),
+    const limit = parseInt(req.query.limit) || 4;
+    const skip = parseInt(req.query.skip) || 0;
+
+    const total = await Category.countDocuments();
+    const categories = await Category.find().skip(skip).limit(limit).lean();
+
+    const limitedCategories = categories.map((category) => ({
+      ...category,
+      type: category.type.slice(0, 4),
     }));
-    res.json(limitSubCategories);
+
+    res.json({
+      categories: limitedCategories,
+      total,
+    });
   } catch (error) {
+    console.error("Error fetching categories:", error);
     res.status(500).json({ msg: "Server error" });
   }
 });

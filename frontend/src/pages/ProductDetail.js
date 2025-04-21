@@ -15,17 +15,13 @@ function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState("");
   const [availability, setAvailability] = useState(false);
   const [popup, setPopup] = useState(null);
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
+  const API_URL =
+    process.env.REACT_APP_API_URL ||
+    "https://flexmart-backend.onrender.com/api";
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // Select cart from Redux store
   const cart = useSelector((state) => state.cart.cart);
-
-  useEffect(() => {
-    console.log("Updated cart in Redux:", cart);
-  }, [cart]);
 
   axios.defaults.withCredentials = true;
 
@@ -66,50 +62,64 @@ function ProductDetail() {
     }
   };
 
-  const handleAddToCart = async (product) => {
-    const addToCartAction = async () => {
-      if (!product.isAvailable) {
-        showPopup("error", "This product is currently not available.");
-        return;
-      }
+  const addToCart = async (product) => {
+    if (!product.isAvailable) {
+      showPopup("error", "This product is currently not available.");
+      return false;
+    }
 
-      const cartItem = {
-        productId: product._id,
-        quantity,
-        color: selectedColor,
-        size: selectedSize,
-        availability: availability,
-      };
-
-      try {
-        const token = localStorage.getItem("token");
-        const response = await axios.post(
-          `${API_URL}/cart/items`,
-          { ...cartItem, token },
-          { headers: { Authorization: `Bearer ${token}` } } // Ensure token is in headers
-        );
-        const updatedCart = response.data.cart || response.data; // Adjust based on API response
-        dispatch(setCart(updatedCart)); // Update Redux with server cart
-        console.log("Cart updated in Redux:", updatedCart);
-        showPopup(
-          "success",
-          `${product.name} (Color: ${selectedColor}, Size: ${selectedSize}) added to cart!`
-        );
-      } catch (err) {
-        console.error("Error adding to cart:", err);
-        const msg = err.response?.data?.msg || "Failed to add product to cart";
-        showPopup("error", msg);
-      }
+    const cartItem = {
+      productId: product._id,
+      quantity,
+      color: selectedColor,
+      size: selectedSize,
+      availability: availability,
     };
 
-    handleAuthCheck(addToCartAction);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `${API_URL}/cart/items`,
+        { ...cartItem, token },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const updatedCart = response.data.cart || response.data;
+      dispatch(setCart(updatedCart));
+      return true;
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+      const msg = err.response?.data?.msg || "Failed to add product to cart";
+      showPopup("error", msg);
+      return false;
+    }
+  };
+
+  const handleAddToCart = () => {
+    handleAuthCheck(async () => {
+      if (product) {
+        const success = await addToCart(product);
+        if (success) {
+          showPopup(
+            "success",
+            `${product.name} (Color: ${selectedColor}, Size: ${selectedSize}) added to cart!`
+          );
+        }
+      }
+    });
   };
 
   const handleBuyNow = () => {
-    // Placeholder for Buy Now logic (no counter needed here)
-    handleAuthCheck(() => {
-      showPopup("success", "Proceeding to checkout...");
-      // Add checkout navigation or logic here
+    handleAuthCheck(async () => {
+      if (product) {
+        const success = await addToCart(product);
+        if (success) {
+          showPopup(
+            "success",
+            `Proceeding to checkout with ${product.name}...`,
+            "/checkout"
+          );
+        }
+      }
     });
   };
 
@@ -143,24 +153,6 @@ function ProductDetail() {
       <div className="product-detail-breadcrumb">
         <Link to="/" className="breadcrumb-item">
           Home
-        </Link>
-        <span className="breadcrumb-divider">›</span>
-        <Link to="/categories" className="breadcrumb-item">
-          Categories
-        </Link>
-        <span className="breadcrumb-divider">›</span>
-        <Link
-          to={`/categories/${product?.category}`}
-          className="breadcrumb-item"
-        >
-          {product?.category || "Loading..."}
-        </Link>
-        <span className="breadcrumb-divider">›</span>
-        <Link
-          to={`/categories/${product?.category}/${subcategory}`}
-          className="breadcrumb-item"
-        >
-          {subcategory}
         </Link>
         <span className="breadcrumb-divider">›</span>
         <span className="breadcrumb-active">
@@ -274,7 +266,7 @@ function ProductDetail() {
               <div className="product-actions">
                 <button
                   className="add-to-cart-button"
-                  onClick={() => handleAddToCart(product)}
+                  onClick={handleAddToCart}
                   disabled={!product.isAvailable}
                 >
                   Add to Cart

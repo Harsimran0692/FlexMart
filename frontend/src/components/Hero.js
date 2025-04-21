@@ -8,7 +8,9 @@ function Hero() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
+  const API_URL =
+    process.env.REACT_APP_API_URL ||
+    "https://flexmart-backend.onrender.com/api";
 
   useEffect(() => {
     const fetchDeals = async () => {
@@ -21,7 +23,6 @@ function Hero() {
           },
         });
         const dealProducts = response.data.slice(0, 3); // Limit to 3 for the carousel
-        console.log("Fetched deals with images:", dealProducts); // Log images for debugging
         setDeals(dealProducts);
         setError(null);
       } catch (err) {

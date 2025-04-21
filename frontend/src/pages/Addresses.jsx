@@ -39,7 +39,7 @@ function Addresses() {
         }
         const config = { headers: { Authorization: `Bearer ${token}` } };
         const response = await axios.get(
-          "http://localhost:5001/api/addresses",
+          "https://flexmart-backend.onrender.com/api/addresses",
           config
         );
         setAddresses(response.data.addresses || []);
@@ -71,11 +71,10 @@ function Addresses() {
       }
       const config = { headers: { Authorization: `Bearer ${token}` } };
       const response = await axios.post(
-        "http://localhost:5001/api/addresses/addAddress",
+        "https://flexmart-backend.onrender.com/api/addresses/addAddress",
         newAddress,
         config
       );
-      console.log("Add Response:", response.data); // Debug log
       setAddresses(response.data.addresses || [...addresses, newAddress]);
       setSuccess("Address added successfully");
       setIsAddModalOpen(false);
@@ -111,7 +110,7 @@ function Addresses() {
       }
       const config = { headers: { Authorization: `Bearer ${token}` } };
       await axios.patch(
-        `http://localhost:5001/api/addresses/updateAddress/${currentAddress.index}`,
+        `https://flexmart-backend.onrender.com/api/addresses/updateAddress/${currentAddress.index}`,
         updatedAddress,
         config
       );
@@ -138,7 +137,7 @@ function Addresses() {
         }
         const config = { headers: { Authorization: `Bearer ${token}` } };
         await axios.delete(
-          `http://localhost:5001/api/addresses/deleteAddress/${index}`,
+          `https://flexmart-backend.onrender.com/api/addresses/deleteAddress/${index}`,
           config
         );
         const newAddresses = addresses.filter((_, i) => i !== index);

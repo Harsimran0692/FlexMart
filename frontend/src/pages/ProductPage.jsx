@@ -95,7 +95,9 @@ export default function WrappedProductPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { category, subcategory } = useParams();
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
+  const API_URL =
+    process.env.REACT_APP_API_URL ||
+    "https://flexmart-backend.onrender.com/api";
 
   useEffect(() => {
     fetchProducts(setProducts, setLoading, setError, API_URL, subcategory);

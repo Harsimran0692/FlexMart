@@ -36,7 +36,11 @@ function ContactUs() {
     try {
       const token = localStorage.getItem("token");
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      await axios.post("http://localhost:5001/api/contact", formData, config);
+      await axios.post(
+        "https://flexmart-backend.onrender.com/api/contact",
+        formData,
+        config
+      );
       setSuccess("Message sent successfully!");
       setFormData({ name: "", email: "", subject: "", message: "" });
     } catch (err) {

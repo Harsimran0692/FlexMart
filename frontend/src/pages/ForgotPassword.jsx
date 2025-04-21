@@ -8,8 +8,6 @@ function ForgotPassword() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Password reset requested for:", { email });
-    // Add your password reset logic here (e.g., API call to send reset link)
     setSubmitted(true); // Show success message after submission
   };
 

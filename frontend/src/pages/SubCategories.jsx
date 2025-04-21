@@ -14,10 +14,9 @@ function SubCategories() {
       try {
         setLoading(true);
         const subCategoryData = await axios.get(
-          `http://localhost:5001/api/categories/subcategory/${id}`
+          `https://flexmart-backend.onrender.com/api/categories/subcategory/${id}`
         );
         setCategory(subCategoryData.data);
-        console.log("subCategoryData: ", subCategoryData.data);
       } catch (error) {
         console.error(
           "Error fetching Subcategories",

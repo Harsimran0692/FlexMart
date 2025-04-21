@@ -8,7 +8,9 @@ function DealsSection() {
   const [deals, setDeals] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
+  const API_URL =
+    process.env.REACT_APP_API_URL ||
+    "https://flexmart-backend.onrender.com/api";
 
   function calculateTimeLeft() {
     const now = new Date();

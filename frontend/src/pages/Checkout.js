@@ -56,13 +56,16 @@ export default function CheckoutPage() {
           throw new Error("No authentication token found");
         }
 
-        const response = await fetch("http://localhost:5001/api/addresses", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          "https://flexmart-backend.onrender.com/api/addresses",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch addresses");
@@ -99,13 +102,16 @@ export default function CheckoutPage() {
           throw new Error("No authentication token found");
         }
 
-        const response = await fetch("http://localhost:5001/api/cart/items", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await fetch(
+          "https://flexmart-backend.onrender.com/api/cart/items",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to fetch cart items");
@@ -216,29 +222,32 @@ export default function CheckoutPage() {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5001/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          addressId: selectedAddress,
-          items: cart.items.map((item) => ({
-            product: item.product._id,
-            quantity: item.quantity,
-            price: item.price,
-            color: item.color || "",
-            size: item.size || "",
-          })),
-          paymentDetails: {
-            cardNumberLast4: paymentDetails.cardNumber
-              .replace(/\s/g, "")
-              .slice(-4),
-            cardholderName: paymentDetails.cardholderName,
+      const response = await fetch(
+        "https://flexmart-backend.onrender.com/api/orders",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-        }),
-      });
+          body: JSON.stringify({
+            addressId: selectedAddress,
+            items: cart.items.map((item) => ({
+              product: item.product._id,
+              quantity: item.quantity,
+              price: item.price,
+              color: item.color || "",
+              size: item.size || "",
+            })),
+            paymentDetails: {
+              cardNumberLast4: paymentDetails.cardNumber
+                .replace(/\s/g, "")
+                .slice(-4),
+              cardholderName: paymentDetails.cardholderName,
+            },
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();

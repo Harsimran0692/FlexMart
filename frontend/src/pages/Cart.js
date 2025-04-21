@@ -119,7 +119,7 @@ function Cart() {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.cart);
   const cartItems = cart.items || [];
-  const API_URL = "http://localhost:5001/api";
+  const API_URL = "https://flexmart-backend.onrender.com/api";
 
   const fetchCart = async () => {
     setLoading(true);

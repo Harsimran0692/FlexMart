@@ -44,9 +44,12 @@ function Header() {
   // Fetch username if token exists and Redux state is default
   const fetchUserName = async (token) => {
     try {
-      const response = await fetch("http://localhost:5001/api/auth/user", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        "https://flexmart-backend.onrender.com/api/auth/user",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (!response.ok) {
         throw new Error("Invalid Token");
       }
@@ -66,9 +69,12 @@ function Header() {
   // Fetch cart from server
   const fetchCart = async (token) => {
     try {
-      const response = await fetch("http://localhost:5001/api/cart/items", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        "https://flexmart-backend.onrender.com/api/cart/items",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch cart");
       }
@@ -169,12 +175,14 @@ function Header() {
       }
 
       try {
-        const response = await axios.get("http://localhost:5001/api/products/");
+        const response = await axios.get(
+          "https://flexmart-backend.onrender.com/api/products/"
+        );
         const products = response.data;
-        console.log("Fetched products:", products); // Debug log
+        // console.log("Fetched products:", products); // Debug log
         const filtered = products.filter((product) =>
-          product.name
-            .toLowerCase()
+          product?.name
+            ?.toLowerCase()
             .includes(debouncedSearchValue.toLowerCase())
         );
         setSearchResults(filtered);
@@ -216,9 +224,7 @@ function Header() {
     setSearchValue(e.target.value);
   };
 
-  const handleSearch = () => {
-    console.log("Searching for:", searchValue);
-  };
+  const handleSearch = () => {};
 
   const handleProductSelect = (product) => {
     if (!product._id) {

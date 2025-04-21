@@ -15,12 +15,11 @@ function Register() {
   const RegisterUser = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5001/api/auth/register",
+        "https://flexmart-backend.onrender.com/api/auth/register",
         { name, email, password }
       );
       setLoader(false);
       setSuccess(true);
-      console.log("Registration successful:", response.data);
       window.location.href = "/signin";
     } catch (err) {
       setLoader(false);

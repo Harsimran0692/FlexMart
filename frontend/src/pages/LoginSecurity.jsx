@@ -39,7 +39,7 @@ function LoginSecurity() {
         }
         const config = { headers: { Authorization: `Bearer ${token}` } };
         const response = await axios.get(
-          "http://localhost:5001/api/user",
+          "https://flexmart-backend.onrender.com/api/user",
           config
         );
         setUserData({
@@ -71,7 +71,7 @@ function LoginSecurity() {
       const token = localStorage.getItem("token");
       const config = { headers: { Authorization: `Bearer ${token}` } };
       await axios.put(
-        "http://localhost:5001/api/user/password",
+        "https://flexmart-backend.onrender.com/api/user/password",
         formData,
         config
       );
