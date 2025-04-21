@@ -29,7 +29,7 @@ app.use(express.static("public"));
 // CORS configuration to allow all origins
 app.use(
   cors({
-    origin: "https://flex-mart-rho.vercel.app/", // Allow all origins
+    origin: "https://flex-mart-frontend.vercel.app", // Allow all origins
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // Required for session cookies
